@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAFZZ STORE - Top Up Game Auto Delivery</title>
+  <style>
+    /* === CSS RAFZZ STORE === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .search {
+      padding: 1rem;
+      background: white;
+      margin: 1rem auto;
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .search input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .product-image {
+      height: 150px;
+      background: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #6e48aa;
+    }
+
+    .product-details {
+      padding: 1.2rem;
+    }
+
+    .product-details h3 {
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .price-list {
+      margin: 1rem 0;
+    }
+
+    .price-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed #eee;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .detail-btn, .buy-btn {
+      display: block;
+      width: 100%;
+      padding: 0.8rem;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+      transition: opacity 0.3s;
+    }
+
+    .detail-btn {
+      background: #3498db;
+    }
+
+    .buy-btn {
+      background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+    }
+
+    .detail-btn:hover, .buy-btn:hover {
+      opacity: 0.9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: #333;
+      color: white;
+      margin-top: 2rem;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .close-modal {
+      float: right;
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .submit-btn {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 1rem;
+      width: 100%;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    .payment-info {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .payment-info h3 {
+      margin-bottom: 0.5rem;
+      color: #6e48aa;
+    }
+
+    .payment-info p {
+      margin: 0.5rem 0;
+    }
+
+    .qris-info {
+      background: #e3f2fd;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .products {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎮 RAFZZ STORE</h1>
+    <p>Top Up Game Termurah & Auto Delivery!</p>
+  </header>
+
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Cari game... (Contoh: Free Fire, Mobile Legends)">
+  </div>
+
+  <div class="products" id="productList">
+    <!-- Produk akan dimuat via JavaScript -->
+  </div>
+
+  <!-- Modal Detail Produk -->
+  <div class="modal" id="detailModal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('detailModal')">&times;</span>
+      <h2 id="detailTitle">Mobile Legends Diamond</h2>
+      <div id="detailContent">
+        <!-- Konten akan diisi oleh JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Form Pembelian -->
+  <div class="modal" id="purchaseModal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('purchaseModal')">&times;</span>
+      <h2 id="purchaseTitle">Form Top Up</h2>
+      <form id="purchaseForm" onsubmit="processPayment(event)">
+        <input type="hidden" id="productId">
+        <input type="hidden" id="productAmount">
+        <input type="hidden" id="productPrice">
+        
+        <div class="form-group">
+          <label for="gameId">ID Game</label>
+          <input type="text" id="gameId" placeholder="Contoh: 123456789" required>
+        </div>
+        
+        <div class="form-group" id="serverGroup">
+          <label for="serverId">Server ID</label>
+          <input type="text" id="serverId" placeholder="Contoh: 1234">
+        </div>
+        
+        <div class="form-group">
+          <label>Nominal Top Up</label>
+          <div id="selectedAmount" style="padding: 0.8rem; background: #f9f9f9; border-radius: 4px; margin-top: 0.5rem;"></div>
+        </div>
+        
+        <div class="payment-info">
+          <h3>Instruksi Pembayaran:</h3>
+          <p><strong>Dana:</strong> <a href="#" id="danaLink" onclick="sendWhatsAppMessage('Dana')">0895418378531</a></p>
+          <p><strong>Gopay:</strong> <a href="#" id="gopayLink" onclick="sendWhatsAppMessage('Gopay')">0895418378531</a></p>
+          <p>Transfer sesuai nominal pembelian dan konfirmasi via WhatsApp dengan menyertakan bukti transfer.</p>
+        </div>
+        
+        <div class="qris-info">
+          <p>Ingin transaksi menggunakan QRIS?</p>
+          <p><strong>Hubungi Admin:</strong> <a href="#" id="adminLink" onclick="sendWhatsAppMessage('Admin')">083161388652</a></p>
+        </div>
+        
+        <button type="submit" class="submit-btn">KONFIRMASI PEMBELIAN</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 RAFZZ STORE | WhatsApp: <a href="https://wa.me/6283161388652" target="_blank" style="color: #fff; text-decoration: underline;">083161388652</a></p>
+  </footer>
+
+  <script>
+    // === JavaScript RAFZZ STORE ===
+    const products = [
+      {
+        id: 1,
+        name: "Free Fire",
+        image: "FF",
+        requireServerId: false,
+        prices: [
+          { code: "ff_5", amount: "5 Diamond", price: "Rp 2.050" },
+          { code: "ff_70", amount: "70 Diamond", price: "Rp 11.000" },
+          { code: "ff_140", amount: "140 Diamond", price: "Rp 21.500" },
+          { code: "ff_210", amount: "210 Diamond", price: "Rp 43.000" },
+          { code: "ff_520", amount: "520 Diamond", price: "Rp 105.000" },
+          { code: "ff_1060", amount: "1060 Diamond", price: "Rp 210.000" },
+          { code: "ff_2180", amount: "2180 Diamond", price: "Rp 420.000" }
+        ],
+        description: "Diamond Free Fire akan langsung masuk ke akun Anda setelah pembayaran berhasil."
+      },
+      {
+        id: 2,
+        name: "Mobile Legends",
+        image: "ML",
+        requireServerId: true,
+        prices: [
+          { code: "ml_5", amount: "5 Diamond", price: "Rp 2.398" },
+          { code: "ml_40", amount: "40 Diamond", price: "Rp 12.000" },
+          { code: "ml_100", amount: "100 Diamond", price: "Rp 27.499" },
+          { code: "ml_257", amount: "257 Diamond", price: "Rp 67.500" },
+          { code: "ml_514", amount: "514 Diamond", price: "Rp 135.499" },
+          { code: "ml_2010", amount: "2010 Diamond", price: "Rp 500.000" }
+        ],
+        description: "Diamond akan dikirim otomatis ke akun Mobile Legends Anda dalam 1-3 menit setelah pembayaran."
+      },
+      {
+        id: 3,
+        name: "PUBG Mobile",
+        image: "PUBG",
+        requireServerId: true,
+        prices: [
+          { code: "pubg_50", amount: "50 UC", price: "Rp 15.500" },
+          { code: "pubg_100", amount: "100 UC", price: "Rp 30.500" },
+          { code: "pubg_300", amount: "300 UC", price: "Rp 73.875" },
+          { code: "pubg_550", amount: "550 UC", price: "Rp 132.153" },
+          { code: "pubg_1000", amount: "1000 UC", price: "Rp 235.000" },
+          { code: "pubg_4000", amount: "4000 UC", price: "Rp 765.852" }
+        ],
+        description: "Top up UC PUBG Mobile dengan harga termurah dan proses instan."
+      },
+      {
+        id: 4,
+        name: "Valorant",
+        image: "VALO",
+        requireServerId: false,
+        prices: [
+          { code: "valo_425", amount: "425 VP", price: "Rp 52.500" },
+          { code: "valo_1075", amount: "1075 VP", price: "Rp 130.000" },
+          { code: "valo_2150", amount: "2150 VP", price: "Rp 260.000" },
+          { code: "valo_4300", amount: "4300 VP", price: "Rp 520.000" },
+          { code: "valo_10750", amount: "10750 VP", price: "Rp 1.300.000" }
+        ],
+        description: "Valorant Points akan dikirim otomatis ke akun Anda dalam 1-3 menit setelah pembayaran."
+      },
+      {
+        id: 5,
+        name: "Blood Strike",
+        image: "BS",
+        requireServerId: false,
+        prices: [
+          { code: "bs_100", amount: "100 Coins", price: "Rp 11.382" },
+          { code: "bs_500", amount: "500 Coins", price: "Rp 53.149" },
+          { code: "bs_1000", amount: "1000 Coins", price: "Rp 105.000" },
+          { code: "bs_2000", amount: "2000 Coins", price: "Rp 210.592" },
+          { code: "bs_5000", amount: "5000 Coins", price: "Rp 524.000" }
+        ],
+        description: "Blood Strike Coins akan langsung masuk ke akun Anda setelah pembayaran berhasil."
+      },
+      {
+        id: 6,
+        name: "Arena of Valor",
+        image: "AOV",
+        requireServerId: true,
+        prices: [
+          { code: "aov_100", amount: "100 Voucher", price: "Rp 10.500" },
+          { code: "aov_500", amount: "500 Voucher", price: "Rp 52.500" },
+          { code: "aov_1000", amount: "1000 Voucher", price: "Rp 105.000" },
+          { code: "aov_2000", amount: "2000 Voucher", price: "Rp 210.000" },
+          { code: "aov_5000", amount: "5000 Voucher", price: "Rp 525.000" }
+        ],
+        description: "Arena of Valor Voucher akan dikirim otomatis ke akun Anda dalam 1-3 menit setelah pembayaran."
+      },
+      {
+        id: 7,
+        name: "Call of Duty Mobile",
+        image: "CODM",
+        requireServerId: false,
+        prices: [
+          { code: "codm_80", amount: "80 CP", price: "Rp 15.000" },
+          { code: "codm_400", amount: "400 CP", price: "Rp 75.000" },
+          { code: "codm_800", amount: "800 CP", price: "Rp 150.000" },
+          { code: "codm_2000", amount: "2000 CP", price: "Rp 375.000" },
+          { code: "codm_4000", amount: "4000 CP", price: "Rp 750.000" }
+        ],
+        description: "COD Points akan langsung masuk ke akun Anda setelah pembayaran berhasil."
+      },
+      {
+        id: 8,
+        name: "Genshin Impact",
+        image: "GI",
+        requireServerId: true,
+        prices: [
+          { code: "gi_60", amount: "60 Genesis Crystals", price: "Rp 15.000" },
+          { code: "gi_300", amount: "300 Genesis Crystals", price: "Rp 75.000" },
+          { code: "gi_980", amount: "980 Genesis Crystals", price: "Rp 245.000" },
+          { code: "gi_1980", amount: "1980 Genesis Crystals", price: "Rp 490.000" },
+          { code: "gi_3280", amount: "3280 Genesis Crystals", price: "Rp 820.000" }
+        ],
+        description: "Genesis Crystals akan dikirim otomatis ke akun Anda dalam 1-3 menit setelah pembayaran."
+      },
+      {
+        id: 9,
+        name: "Honor of Kings",
+        image: "HOK",
+        requireServerId: true,
+        prices: [
+          { code: "hok_60", amount: "60 Diamond", price: "Rp 10.500" },
+          { code: "hok_300", amount: "300 Diamond", price: "Rp 52.500" },
+          { code: "hok_600", amount: "600 Diamond", price: "Rp 105.000" },
+          { code: "hok_1500", amount: "1500 Diamond", price: "Rp 262.500" },
+          { code: "hok_3000", amount: "3000 Diamond", price: "Rp 525.000" }
+        ],
+        description: "Honor of Kings Diamond akan dikirim otomatis ke akun Anda dalam 1-3 menit setelah pembayaran."
+      },
+      {
+        id: 10,
+        name: "Clash of Clans",
+        image: "COC",
+        requireServerId: false,
+        prices: [
+          { code: "coc_100", amount: "100 Gems", price: "Rp 15.000" },
+          { code: "coc_500", amount: "500 Gems", price: "Rp 75.000" },
+          { code: "coc_1200", amount: "1200 Gems", price: "Rp 180.000" },
+          { code: "coc_2500", amount: "2500 Gems", price: "Rp 375.000" },
+          { code: "coc_5000", amount: "5000 Gems", price: "Rp 750.000" }
+        ],
+        description: "Gems akan langsung masuk ke akun Anda setelah pembayaran berhasil."
+      }
+    ];
+
+    // Fungsi untuk menampilkan produk
+    function displayProducts(productsToShow) {
+      const productList = document.getElementById('productList');
+      productList.innerHTML = '';
+
+      productsToShow.forEach(product => {
+        productList.innerHTML += `
+          <div class="product-card">
+            <div class="product-image">${product.image}</div>
+            <div class="product-details">
+              <h3>${product.name}</h3>
+              <div class="price-list">
+                ${product.prices.slice(0, 2).map(price => `
+                  <div class="price-item">
+                    <span>${price.amount}</span>
+                    <span>${price.price}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="action-buttons">
+                <button class="detail-btn" onclick="showDetailModal(${product.id})">DETAIL</button>
+                <button class="buy-btn" onclick="showPurchaseModal(${product.id})">BELI</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Fungsi untuk mencari produk
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredProducts = products.filter(product => 
+        product.name.toLowerCase().includes(searchTerm)
+      );
+      displayProducts(filteredProducts);
+    });
+
+    // Fungsi untuk menampilkan modal detail
+    function showDetailModal(productId) {
+      const product = products.find(p => p.id === productId);
+      const modal = document.getElementById('detailModal');
+      const modalTitle = document.getElementById('detailTitle');
+      const modalContent = document.getElementById('detailContent');
+
+      modalTitle.textContent = product.name;
+      
+      modalContent.innerHTML = `
+        <p>${product.description}</p>
+        <h3 style="margin: 1rem 0 0.5rem 0;">Daftar Harga Lengkap:</h3>
+        <table class="price-table">
+          <thead>
+            <tr>
+              <th>Nominal</th>
+              <th>Harga</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${product.prices.map(price => `
+              <tr>
+                <td>${price.amount}</td>
+                <td>${price.price}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <button 
+          class="buy-btn" 
+          style="margin-top: 1.5rem;"
+          onclick="showPurchaseModal(${product.id})"
+        >
+          BELI SEKARANG
+        </button>
+      `;
+
+      modal.style.display = 'flex';
+    }
+
+    // Fungsi untuk menampilkan modal pembelian
+    function showPurchaseModal(productId, amountIndex = 0) {
+      const product = products.find(p => p.id === productId);
+      const modal = document.getElementById('purchaseModal');
+      const purchaseTitle = document.getElementById('purchaseTitle');
+      const selectedAmount = document.getElementById('selectedAmount');
+      
+      // Set default amount jika tidak dipilih
+      const selectedPrice = product.prices[amountIndex];
+      
+      // Isi form
+      purchaseTitle.textContent = `Top Up ${product.name}`;
+      document.getElementById('productId').value = product.id;
+      document.getElementById('productAmount').value = selectedPrice.amount;
+      document.getElementById('productPrice').value = selectedPrice.price;
+      selectedAmount.innerHTML = `
+        <select onchange="updateSelectedAmount(this, ${product.id})" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
+          ${product.prices.map((price, index) => `
+            <option value="${index}" ${index === amountIndex ? 'selected' : ''}>${price.amount} - ${price.price}</option>
+          `).join('')}
+        </select>
+      `;
+      
+      // Sembunyikan server ID jika tidak diperlukan
+      document.getElementById('serverGroup').style.display = 
+        product.requireServerId ? 'block' : 'none';
+      
+      modal.style.display = 'flex';
+    }
+
+    // Fungsi untuk update nominal yang dipilih
+    function updateSelectedAmount(select, productId) {
+      const selectedIndex = select.value;
+      const product = products.find(p => p.id === productId);
+      const selectedPrice = product.prices[selectedIndex];
+      
+      document.getElementById('productAmount').value = selectedPrice.amount;
+      document.getElementById('productPrice').value = selectedPrice.price;
+    }
+
+    // Fungsi untuk memproses pembayaran
+    function processPayment(event) {
+      event.preventDefault();
+      
+      const productId = document.getElementById('productId').value;
+      const gameId = document.getElementById('gameId').value;
+      const serverId = document.getElementById('serverId').value;
+      const amount = document.getElementById('productAmount').value;
+      const price = document.getElementById('productPrice').value;
+      
+      const product = products.find(p => p.id == productId);
+      
+      // Simulasi API Apigames (dalam implementasi real, gunakan fetch/axios)
+      const refId = "RAFZZ" + Date.now();
+      
+      closeModal('purchaseModal');
+      
+      // Simulasi konfirmasi pembelian
+      setTimeout(() => {
+        alert(`✅ Konfirmasi Pembelian Berhasil!\n\nGame: ${product.name}\nID: ${gameId}\nServer: ${serverId || '-'}\nNominal: ${amount}\nHarga: ${price}\n\nSilakan transfer ke:\nDana/Gopay: 0895418378531\n\nSetelah transfer, kirim bukti ke WhatsApp: 083161388652\n\nRef ID: ${refId}`);
+      }, 500);
+    }
+
+    // Fungsi untuk mengirim pesan WhatsApp dengan format otomatis
+    function sendWhatsAppMessage(paymentMethod) {
+      const productId = document.getElementById('productId').value;
+      const gameId = document.getElementById('gameId').value;
+      const serverId = document.getElementById('serverId').value;
+      const amount = document.getElementById('productAmount').value;
+      const price = document.getElementById('productPrice').value;
+      
+      const product = products.find(p => p.id == productId);
+      
+      let phoneNumber = "";
+      let message = "";
+      
+      if (paymentMethod === 'Admin') {
+        phoneNumber = "6283161388652";
+        message = `Halo Admin RAFZZ STORE, saya ingin top up:\n\n` +
+                  `*Nama Game:* ${product.name}\n` +
+                  `*ID Game:* ${gameId || 'Belum diisi'}\n` +
+                  `${product.requireServerId ? `*ID Server:* ${serverId || 'Belum diisi'}\n` : ''}` +
+                  `*Nominal Top Up:* ${amount || 'Belum dipilih'}\n` +
+                  `*Nominal Harga:* ${price || 'Belum dipilih'}\n` +
+                  `*Metode Pembayaran:* QRIS\n` +
+                  `*Bukti Pembayaran:* (Silakan upload bukti transfer)`;
+      } else {
+        phoneNumber = "62895418378531";
+        message = `Halo Admin RAFZZ STORE, saya ingin top up:\n\n` +
+                  `*Nama Game:* ${product.name}\n` +
+                  `*ID Game:* ${gameId || 'Belum diisi'}\n` +
+                  `${product.requireServerId ? `*ID Server:* ${serverId || 'Belum diisi'}\n` : ''}` +
+                  `*Nominal Top Up:* ${amount || 'Belum dipilih'}\n` +
+                  `*Nominal Harga:* ${price || 'Belum dipilih'}\n` +
+                  `*Metode Pembayaran:* ${paymentMethod}\n` +
+                  `*Bukti Pembayaran:* (Silakan upload bukti transfer)`;
+      }
+      
+      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+
+    // Fungsi untuk menutup modal
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Tampilkan semua produk saat pertama kali load
+    displayProducts(products);
+  </script>
+</body>
+</html>
